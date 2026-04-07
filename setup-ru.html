@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code — Настройка проекта (Пошаговая инструкция)</title>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #3b84f6;
+    --navy: #0F1B4C;
+    --dark: #0a0e1a;
+    --dark-card: #111827;
+    --dark-border: #1f2937;
+    --text: #e5e7eb;
+    --text-muted: #9ca3af;
+    --text-dim: #6b7280;
+    --green: #22c55e;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --purple: #a855f7;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Manrope', sans-serif;
+    background: var(--dark);
+    color: var(--text);
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--dark) 60%, #1a1a2e 100%);
+    padding: 60px 24px 48px;
+    text-align: center;
+    border-bottom: 1px solid var(--dark-border);
+    position: relative;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+    background: radial-gradient(circle at 30% 50%, rgba(59,132,246,0.08) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-family: 'Exo 2', sans-serif;
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    font-weight: 800; color: #fff;
+    margin-bottom: 12px; position: relative;
+  }
+  .hero h1 span { color: var(--blue); }
+  .hero p {
+    font-size: 1.1rem; color: var(--text-muted);
+    max-width: 640px; margin: 0 auto; position: relative;
+  }
+
+  /* NAV */
+  .nav {
+    background: var(--dark-card);
+    border-bottom: 1px solid var(--dark-border);
+    padding: 12px 24px;
+    position: sticky; top: 0; z-index: 100;
+    overflow-x: auto; white-space: nowrap;
+  }
+  .nav-inner {
+    max-width: 860px; margin: 0 auto;
+    display: flex; gap: 4px; justify-content: center;
+  }
+  .nav a {
+    color: var(--text-muted); text-decoration: none;
+    font-size: 0.82rem; font-weight: 500;
+    padding: 6px 12px; border-radius: var(--radius-sm);
+    transition: all 0.2s; flex-shrink: 0;
+  }
+  .nav a:hover { color: #fff; background: rgba(59,132,246,0.1); }
+
+  /* CONTAINER */
+  .container { max-width: 860px; margin: 0 auto; padding: 36px 24px 80px; }
+
+  /* SECTIONS */
+  .section { margin-bottom: 44px; }
+  .section-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 18px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--dark-border);
+  }
+  .section-number {
+    font-family: 'Exo 2', sans-serif;
+    font-size: 0.75rem; font-weight: 800; color: var(--blue);
+    background: rgba(59,132,246,0.15);
+    border: 1px solid rgba(59,132,246,0.3);
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 8px; flex-shrink: 0;
+  }
+  .section h2 {
+    font-family: 'Exo 2', sans-serif;
+    font-size: 1.4rem; font-weight: 700; color: #fff;
+  }
+  .section h3 {
+    font-family: 'Exo 2', sans-serif;
+    font-size: 1.1rem; font-weight: 600; color: #fff;
+    margin: 20px 0 10px;
+  }
+  .section p { margin-bottom: 12px; }
+
+  /* CARDS */
+  .card {
+    background: var(--dark-card);
+    border: 1px solid var(--dark-border);
+    border-radius: var(--radius);
+    padding: 18px 22px; margin-bottom: 14px;
+  }
+  .card-blue { border-left: 3px solid var(--blue); }
+  .card-green { border-left: 3px solid var(--green); }
+  .card-amber { border-left: 3px solid var(--amber); }
+  .card-red { border-left: 3px solid var(--red); }
+  .card-title {
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 600; color: #fff;
+    margin-bottom: 8px; font-size: 1rem;
+  }
+  .card p { margin-bottom: 6px; font-size: 0.92rem; }
+  .card p:last-child { margin-bottom: 0; }
+
+  /* CODE */
+  pre {
+    background: #0d1117;
+    border: 1px solid var(--dark-border);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px; overflow-x: auto;
+    margin: 10px 0 14px; font-size: 0.85rem; line-height: 1.6;
+  }
+  code { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+  pre code { color: #e6edf3; }
+  .ci {
+    background: rgba(59,132,246,0.1);
+    border: 1px solid rgba(59,132,246,0.2);
+    padding: 2px 8px; border-radius: 4px;
+    font-size: 0.82rem; color: var(--blue);
+  }
+  .cc { color: #6b7280; }
+  .ck { color: #ff7b72; }
+  .cs { color: #a5d6ff; }
+  .ckey { color: #79c0ff; }
+
+  /* CALLOUTS */
+  .callout {
+    border-radius: var(--radius-sm);
+    padding: 14px 18px; margin: 12px 0;
+    font-size: 0.9rem; display: flex; gap: 10px; align-items: flex-start;
+  }
+  .callout-tip { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); color: var(--green); }
+  .callout-warn { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); color: var(--amber); }
+  .callout-info { background: rgba(59,132,246,0.08); border: 1px solid rgba(59,132,246,0.2); color: var(--blue); }
+  .callout-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+
+  /* TREE */
+  .tree {
+    background: #0d1117; border: 1px solid var(--dark-border);
+    border-radius: var(--radius-sm); padding: 16px 20px;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+    line-height: 1.8; color: #e6edf3; overflow-x: auto; margin: 10px 0 14px;
+  }
+  .tree .dir { color: var(--blue); font-weight: 600; }
+  .tree .file { color: var(--text-muted); }
+  .tree .comment { color: #6b7280; font-style: italic; }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 14px; font-size: 0.88rem; }
+  th {
+    text-align: left; padding: 10px 14px;
+    background: rgba(59,132,246,0.1); color: var(--blue);
+    font-family: 'Exo 2', sans-serif; font-weight: 600;
+    font-size: 0.82rem; text-transform: uppercase;
+    letter-spacing: 0.5px; border-bottom: 1px solid var(--dark-border);
+  }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--dark-border); }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* COPY */
+  .cw { position: relative; }
+  .cb {
+    position: absolute; top: 8px; right: 8px;
+    background: rgba(59,132,246,0.2);
+    border: 1px solid rgba(59,132,246,0.3);
+    color: var(--blue); padding: 4px 10px;
+    border-radius: 6px; font-size: 0.72rem;
+    font-family: 'Manrope', sans-serif; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .cb:hover { background: rgba(59,132,246,0.3); }
+  .cb.ok { background: rgba(34,197,94,0.2); border-color: rgba(34,197,94,0.3); color: var(--green); }
+
+  /* CHECKLIST */
+  .checklist { list-style: none; padding: 0; }
+  .checklist li {
+    padding: 8px 0 8px 36px; position: relative;
+    font-size: 0.92rem; cursor: pointer;
+  }
+  .checklist li::before {
+    content: ''; position: absolute; left: 4px; top: 12px;
+    width: 18px; height: 18px;
+    border: 2px solid var(--dark-border); border-radius: 4px;
+  }
+  .checklist li.done::before { background: var(--green); border-color: var(--green); }
+  .checklist li.done::after {
+    content: '\2713'; position: absolute; left: 8px; top: 10px;
+    color: #fff; font-size: 0.72rem; font-weight: 700;
+  }
+
+  /* STEPS */
+  .steps { counter-reset: step; list-style: none; padding: 0; }
+  .steps li {
+    counter-increment: step; position: relative;
+    padding: 10px 0 10px 48px;
+    border-left: 2px solid var(--dark-border); margin-left: 15px;
+  }
+  .steps li:last-child { border-left-color: transparent; }
+  .steps li::before {
+    content: counter(step); position: absolute; left: -13px; top: 10px;
+    width: 26px; height: 26px; background: var(--blue); color: #fff;
+    font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: 0.75rem;
+    display: flex; align-items: center; justify-content: center; border-radius: 50%;
+  }
+  .steps li strong { color: #fff; }
+
+  /* ACCORDION */
+  details {
+    background: var(--dark-card); border: 1px solid var(--dark-border);
+    border-radius: var(--radius-sm); margin: 8px 0;
+  }
+  summary {
+    padding: 12px 18px; cursor: pointer; font-weight: 600;
+    color: #fff; font-family: 'Exo 2', sans-serif; font-size: 0.95rem;
+    list-style: none; display: flex; align-items: center; gap: 8px;
+  }
+  summary::before { content: '\25B6'; font-size: 0.65rem; color: var(--blue); transition: transform 0.2s; }
+  details[open] summary::before { transform: rotate(90deg); }
+  summary::-webkit-details-marker { display: none; }
+  details > div { padding: 0 18px 16px; }
+
+  /* FOOTER */
+  .footer {
+    text-align: center; padding: 36px 24px;
+    border-top: 1px solid var(--dark-border);
+    color: var(--text-dim); font-size: 0.82rem;
+  }
+  .footer a { color: var(--blue); text-decoration: none; }
+
+  @media (max-width: 640px) {
+    .hero { padding: 40px 16px 32px; }
+    .container { padding: 20px 16px 60px; }
+    .nav-inner { justify-content: flex-start; }
+    pre { font-size: 0.78rem; padding: 12px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>Claude Code <span>Настройка</span></h1>
+  <p>Пошаговая инструкция: как настроить Claude Code для любого проекта. Простым языком, без лишнего.</p>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#prereqs">Подготовка</a>
+    <a href="#start">Запуск</a>
+    <a href="#claude-md">CLAUDE.md</a>
+    <a href="#structure">Структура</a>
+    <a href="#rules">Правила</a>
+    <a href="#skills">Навыки</a>
+    <a href="#settings">Настройки</a>
+    <a href="#memory">Память</a>
+    <a href="#mcp">MCP</a>
+    <a href="#checklist">Чеклист</a>
+  </div>
+</nav>
+
+<div class="container">
+
+<!-- ============================================================ -->
+<!-- 1. ПОДГОТОВКА -->
+<!-- ============================================================ -->
+<div class="section" id="prereqs">
+  <div class="section-header">
+    <div class="section-number">1</div>
+    <h2>Подготовка</h2>
+  </div>
+
+  <p>Перед началом тебе нужно:</p>
+
+  <div class="card card-green">
+    <div class="card-title">Что должно быть установлено</div>
+    <ol style="margin: 0; padding-left: 20px; font-size: 0.92rem;">
+      <li><strong>VS Code</strong> — скачай с <a href="https://code.visualstudio.com" style="color: var(--blue);">code.visualstudio.com</a> если ещё нет</li>
+      <li><strong>Расширение Claude Code</strong> — открой VS Code, нажми на иконку расширений (квадратики слева), напиши "Claude Code" в поиске, нажми "Install"</li>
+      <li><strong>Аккаунт Claude</strong> — нужен Claude Pro или Max (платная подписка на <a href="https://claude.ai" style="color: var(--blue);">claude.ai</a>)</li>
+    </ol>
+  </div>
+
+  <div class="callout callout-info">
+    <span class="callout-icon">i</span>
+    <span>Claude Code — это ИИ-помощник для программирования. Он читает твой проект, понимает код, и может писать/редактировать файлы, запускать команды, и помогать с любыми задачами.</span>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 2. ЗАПУСК -->
+<!-- ============================================================ -->
+<div class="section" id="start">
+  <div class="section-header">
+    <div class="section-number">2</div>
+    <h2>Первый запуск</h2>
+  </div>
+
+  <ol class="steps">
+    <li><strong>Открой VS Code</strong> и открой папку своего проекта (File &rarr; Open Folder)</li>
+    <li><strong>Открой панель Claude Code</strong> — она появится в боковой панели после установки расширения. Кликни на иконку Claude слева.</li>
+    <li><strong>Войди в аккаунт</strong> — Claude попросит авторизоваться. Следуй инструкциям на экране.</li>
+    <li><strong>Готово!</strong> Теперь ты можешь писать Claude что делать прямо в чате.</li>
+  </ol>
+
+  <div class="callout callout-tip">
+    <span class="callout-icon">*</span>
+    <span><strong>Совет:</strong> Напиши Claude <code class="ci">/init</code> — он автоматически просканирует твой проект и создаст файл CLAUDE.md с базовыми настройками.</span>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 3. CLAUDE.MD -->
+<!-- ============================================================ -->
+<div class="section" id="claude-md">
+  <div class="section-header">
+    <div class="section-number">3</div>
+    <h2>Файл CLAUDE.md — Мозг проекта</h2>
+  </div>
+
+  <p>Это <strong>самый важный файл</strong>. Claude читает его в начале каждой сессии. Здесь ты описываешь свой проект и правила работы.</p>
+
+  <div class="card card-amber">
+    <div class="card-title">Главные правила</div>
+    <ul style="margin: 0; padding-left: 20px; font-size: 0.92rem;">
+      <li>Пиши <strong>коротко</strong> — до 200 строк. Длинные файлы Claude хуже воспринимает</li>
+      <li>Пиши <strong>конкретно</strong>: "Используй 4 пробела для отступов" вместо "Форматируй код красиво"</li>
+      <li>Указывай <strong>команды</strong>: "Запусти <code class="ci">npm test</code> перед коммитом"</li>
+    </ul>
+  </div>
+
+  <h3>Какие файлы бывают</h3>
+  <table>
+    <tr><th>Файл</th><th>Для чего</th><th>Кто видит</th></tr>
+    <tr>
+      <td><code class="ci">CLAUDE.md</code></td>
+      <td>Инструкции для проекта</td>
+      <td>Все кто работают над проектом</td>
+    </tr>
+    <tr>
+      <td><code class="ci">CLAUDE.local.md</code></td>
+      <td>Твои личные предпочтения</td>
+      <td>Только ты</td>
+    </tr>
+  </table>
+
+  <h3>Шаблон — скопируй и измени под свой проект</h3>
+  <div class="cw">
+    <pre><code><span class="cc"># Название проекта</span>
+
+<span class="cc">> Одно предложение: что делает этот проект.</span>
+
+<span class="ck">## Технологии</span>
+
+- Frontend: React / Next.js / Vue (что используешь)
+- Backend: Node / Python / PHP (что используешь)
+- База данных: PostgreSQL / MySQL
+
+<span class="ck">## Команды</span>
+
+```
+npm run dev       # Запустить проект
+npm test          # Запустить тесты
+npm run build     # Собрать для продакшена
+```
+
+<span class="ck">## Правила</span>
+
+- Никогда не записывай пароли и ключи прямо в код
+- Используй файл .env для секретных данных
+- 4 пробела для отступов
+- Одинарные кавычки для строк</code></pre>
+    <button class="cb" onclick="copyCode(this)">Копировать</button>
+  </div>
+
+  <h3>Как подключить другие файлы</h3>
+  <p>Вместо копирования содержимого, можно сослаться на файл:</p>
+  <pre><code><span class="cc"># Claude прочитает эти файлы автоматически</span>
+@README.md
+@docs/api-reference.md
+@.claude/rules/security.md</code></pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- 4. СТРУКТУРА -->
+<!-- ============================================================ -->
+<div class="section" id="structure">
+  <div class="section-header">
+    <div class="section-number">4</div>
+    <h2>Структура папок</h2>
+  </div>
+
+  <p>Вот как выглядит правильно настроенный проект:</p>
+
+  <div class="tree">
+<span class="dir">мой-проект/</span>
+├── <span class="file">CLAUDE.md</span>              <span class="comment"># Инструкции для Claude</span>
+├── <span class="file">CLAUDE.local.md</span>        <span class="comment"># Твои личные настройки</span>
+│
+├── <span class="dir">.claude/</span>               <span class="comment"># Папка конфигурации Claude</span>
+│   ├── <span class="file">settings.json</span>      <span class="comment"># Общие настройки проекта</span>
+│   │
+│   ├── <span class="dir">rules/</span>             <span class="comment"># Правила кодирования</span>
+│   │   ├── <span class="dir">common/</span>        <span class="comment"># Общие правила (для всех языков)</span>
+│   │   │   ├── <span class="file">coding-style.md</span>
+│   │   │   ├── <span class="file">testing.md</span>
+│   │   │   └── <span class="file">security.md</span>
+│   │   └── <span class="dir">[язык]/</span>        <span class="comment"># Правила для конкретного языка</span>
+│   │
+│   ├── <span class="dir">skills/</span>            <span class="comment"># Свои команды-навыки</span>
+│   └── <span class="dir">agents/</span>            <span class="comment"># Специальные помощники</span>
+│
+└── <span class="dir">src/</span>                   <span class="comment"># Твой код</span>
+  </div>
+
+  <div class="callout callout-info">
+    <span class="callout-icon">i</span>
+    <span><strong>Не нужно создавать всё сразу.</strong> Начни с CLAUDE.md — остальное можно добавлять по мере необходимости.</span>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 5. ПРАВИЛА -->
+<!-- ============================================================ -->
+<div class="section" id="rules">
+  <div class="section-header">
+    <div class="section-number">5</div>
+    <h2>Правила кодирования</h2>
+  </div>
+
+  <p>Правила — это файлы в папке <code class="ci">.claude/rules/</code>. Claude загружает их автоматически и следует им при написании кода.</p>
+
+  <h3>Как это работает</h3>
+  <ul style="margin: 8px 0 16px 20px; font-size: 0.92rem;">
+    <li>Правила в <code class="ci">common/</code> действуют для всех файлов</li>
+    <li>Правила в папке языка (например <code class="ci">python/</code>) действуют только для файлов этого языка</li>
+    <li>Если правила конфликтуют — правило языка важнее</li>
+  </ul>
+
+  <h3>Готовые наборы правил</h3>
+  <p>Можно скачать проверенные правила для своего языка. Открой терминал (Terminal &rarr; New Terminal в VS Code) и выполни:</p>
+
+  <div class="cw">
+    <pre><code><span class="cc"># 1. Скачать набор правил (временно)</span>
+git clone --depth 1 https://github.com/affaan-m/everything-claude-code.git /tmp/ecc
+
+<span class="cc"># 2. Скопировать нужные правила в свой проект</span>
+cp -r /tmp/ecc/rules/common .claude/rules/
+
+<span class="cc"># 3. Добавить правила для своего языка (выбери нужные):</span>
+cp -r /tmp/ecc/rules/python .claude/rules/       <span class="cc"># для Python</span>
+cp -r /tmp/ecc/rules/typescript .claude/rules/    <span class="cc"># для TypeScript/JavaScript</span>
+cp -r /tmp/ecc/rules/php .claude/rules/           <span class="cc"># для PHP</span>
+
+<span class="cc"># 4. Удалить временную папку</span>
+rm -rf /tmp/ecc</code></pre>
+    <button class="cb" onclick="copyCode(this)">Копировать</button>
+  </div>
+
+  <h3>Доступные языки</h3>
+  <table>
+    <tr><th>Папка</th><th>Язык</th></tr>
+    <tr><td><code class="ci">python/</code></td><td>Python</td></tr>
+    <tr><td><code class="ci">typescript/</code></td><td>TypeScript / JavaScript</td></tr>
+    <tr><td><code class="ci">php/</code></td><td>PHP (WordPress и т.д.)</td></tr>
+    <tr><td><code class="ci">java/</code></td><td>Java</td></tr>
+    <tr><td><code class="ci">web/</code></td><td>HTML / CSS / Frontend</td></tr>
+    <tr><td><code class="ci">golang/</code></td><td>Go</td></tr>
+    <tr><td><code class="ci">rust/</code></td><td>Rust</td></tr>
+    <tr><td><code class="ci">swift/</code></td><td>Swift (iOS)</td></tr>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- 6. НАВЫКИ -->
+<!-- ============================================================ -->
+<div class="section" id="skills">
+  <div class="section-header">
+    <div class="section-number">6</div>
+    <h2>Навыки (Skills) — Свои команды</h2>
+  </div>
+
+  <p>Навыки — это твои собственные команды, которые ты вызываешь через <code class="ci">/имя-навыка</code>. Например: <code class="ci">/deploy</code>, <code class="ci">/seo-audit</code>, <code class="ci">/create-post</code>.</p>
+
+  <h3>Как создать навык</h3>
+
+  <ol class="steps">
+    <li>Создай папку: <code class="ci">.claude/skills/название-навыка/</code></li>
+    <li>Создай файл <code class="ci">SKILL.md</code> внутри этой папки</li>
+    <li>Опиши что навык делает (Claude будет следовать этим инструкциям)</li>
+  </ol>
+
+  <h3>Пример навыка</h3>
+  <div class="cw">
+    <pre><code><span class="cc"># Файл: .claude/skills/create-post/SKILL.md</span>
+
+<span class="cc">---</span>
+<span class="ckey">name:</span> create-post
+<span class="ckey">description:</span> Создать новый пост для блога
+<span class="cc">---</span>
+
+Создай новый пост для блога:
+
+1. Спроси тему поста
+2. Напиши заголовок и мета-описание
+3. Напиши текст поста в формате Markdown
+4. Сохрани в папку content/blog-posts/</code></pre>
+    <button class="cb" onclick="copyCode(this)">Копировать</button>
+  </div>
+
+  <p>Теперь можно написать Claude <code class="ci">/create-post</code> и он выполнит эти шаги.</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- 7. НАСТРОЙКИ -->
+<!-- ============================================================ -->
+<div class="section" id="settings">
+  <div class="section-header">
+    <div class="section-number">7</div>
+    <h2>Настройки и разрешения</h2>
+  </div>
+
+  <p>В файле <code class="ci">.claude/settings.json</code> можно указать что Claude может и не может делать.</p>
+
+  <h3>Пример настроек</h3>
+  <div class="cw">
+    <pre><code>{
+  <span class="ckey">"autoMemoryEnabled"</span>: <span class="ck">true</span>,
+  <span class="ckey">"permissions"</span>: {
+    <span class="ckey">"deny"</span>: [
+      <span class="cs">"Bash(rm -rf *)"</span>,
+      <span class="cs">"Edit(.env)"</span>
+    ]
+  }
+}</code></pre>
+    <button class="cb" onclick="copyCode(this)">Копировать</button>
+  </div>
+
+  <h3>Что значат эти настройки</h3>
+  <table>
+    <tr><th>Настройка</th><th>Что делает</th></tr>
+    <tr><td><code class="ci">autoMemoryEnabled: true</code></td><td>Claude запоминает важные вещи между сессиями</td></tr>
+    <tr><td><code class="ci">deny: ["Bash(rm -rf *)"]</code></td><td>Запрещает Claude удалять все файлы (защита)</td></tr>
+    <tr><td><code class="ci">deny: ["Edit(.env)"]</code></td><td>Запрещает редактировать файл с паролями</td></tr>
+  </table>
+
+  <div class="callout callout-warn">
+    <span class="callout-icon">!</span>
+    <span><strong>Важно:</strong> Настройки <code class="ci">deny</code> — это защита. Claude не сможет случайно удалить твои файлы или изменить пароли.</span>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 8. ПАМЯТЬ -->
+<!-- ============================================================ -->
+<div class="section" id="memory">
+  <div class="section-header">
+    <div class="section-number">8</div>
+    <h2>Память Claude</h2>
+  </div>
+
+  <p>Claude автоматически запоминает важные вещи о проекте. Это работает между сессиями — закрыл VS Code, открыл заново, а Claude помнит.</p>
+
+  <h3>Что запоминает</h3>
+  <ul style="margin: 8px 0 16px 20px; font-size: 0.92rem;">
+    <li>Какие команды нужны для сборки проекта</li>
+    <li>Какие баги ты исправлял и как</li>
+    <li>Твои предпочтения по стилю кода</li>
+    <li>Структуру проекта</li>
+  </ul>
+
+  <h3>Можно попросить запомнить явно</h3>
+  <pre><code>"Запомни что наш сервер работает на порту 3000"
+"Запомни что для этого проекта мы используем Tailwind CSS"
+"Запомни что все картинки кладём в папку assets/images/"</code></pre>
+
+  <div class="callout callout-tip">
+    <span class="callout-icon">*</span>
+    <span>Память хранится на твоём компьютере, не в облаке. Она привязана к папке проекта.</span>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 9. MCP -->
+<!-- ============================================================ -->
+<div class="section" id="mcp">
+  <div class="section-header">
+    <div class="section-number">9</div>
+    <h2>MCP — Подключение внешних сервисов</h2>
+  </div>
+
+  <p>MCP (Model Context Protocol) позволяет Claude работать с внешними сервисами: Google Sheets, Notion, Figma и другими.</p>
+
+  <div class="card card-blue">
+    <div class="card-title">Когда это нужно</div>
+    <p>MCP нужен когда ты хочешь чтобы Claude мог:</p>
+    <ul style="margin: 4px 0 0 20px; font-size: 0.9rem;">
+      <li>Читать и писать в Google Sheets</li>
+      <li>Работать с задачами в Notion</li>
+      <li>Смотреть дизайны в Figma</li>
+      <li>Подключаться к базам данных</li>
+    </ul>
+  </div>
+
+  <div class="callout callout-info">
+    <span class="callout-icon">i</span>
+    <span><strong>Это продвинутая функция.</strong> Если ты только начинаешь — пропусти этот раздел. Вернёшься когда понадобится.</span>
+  </div>
+
+  <h3>Как подключить</h3>
+  <p>В терминале VS Code (Terminal &rarr; New Terminal):</p>
+  <div class="cw">
+    <pre><code><span class="cc"># Пример: подключить Google Sheets</span>
+claude mcp add -s user google-sheets -- npx -y @anthropic-ai/mcp-server-google-sheets</code></pre>
+    <button class="cb" onclick="copyCode(this)">Копировать</button>
+  </div>
+
+  <div class="callout callout-warn">
+    <span class="callout-icon">!</span>
+    <span>Не подключай больше 10 сервисов одновременно — каждый занимает память Claude и замедляет работу.</span>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 10. ЧЕКЛИСТ -->
+<!-- ============================================================ -->
+<div class="section" id="checklist">
+  <div class="section-header">
+    <div class="section-number">10</div>
+    <h2>Чеклист настройки</h2>
+  </div>
+
+  <p>Отмечай галочками по мере выполнения (сохраняется в браузере):</p>
+
+  <div class="card card-green">
+    <div class="card-title">Обязательно (сделай первым)</div>
+    <ul class="checklist" id="cl-1">
+      <li onclick="toggleCheck(this)">Установить VS Code</li>
+      <li onclick="toggleCheck(this)">Установить расширение Claude Code в VS Code</li>
+      <li onclick="toggleCheck(this)">Войти в аккаунт Claude (нужна подписка Pro или Max)</li>
+      <li onclick="toggleCheck(this)">Открыть папку проекта в VS Code</li>
+      <li onclick="toggleCheck(this)">Создать файл <code class="ci">CLAUDE.md</code> с описанием проекта</li>
+      <li onclick="toggleCheck(this)">Проверить что Claude видит твой CLAUDE.md (написать ему "Какой это проект?")</li>
+    </ul>
+  </div>
+
+  <div class="card card-blue">
+    <div class="card-title">Рекомендуется (сделай потом)</div>
+    <ul class="checklist" id="cl-2">
+      <li onclick="toggleCheck(this)">Создать <code class="ci">CLAUDE.local.md</code> с личными настройками</li>
+      <li onclick="toggleCheck(this)">Создать <code class="ci">.claude/settings.json</code> с защитными правилами</li>
+      <li onclick="toggleCheck(this)">Скачать правила кодирования для своего языка</li>
+      <li onclick="toggleCheck(this)">Проверить что автопамять включена</li>
+    </ul>
+  </div>
+
+  <div class="card" style="border-left: 3px solid var(--text-dim);">
+    <div class="card-title">Продвинутое (когда будешь готова)</div>
+    <ul class="checklist" id="cl-3">
+      <li onclick="toggleCheck(this)">Создать свои навыки (skills)</li>
+      <li onclick="toggleCheck(this)">Подключить MCP-сервисы (Google Sheets, Notion и т.д.)</li>
+      <li onclick="toggleCheck(this)">Настроить специальных агентов для код-ревью</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- ШПАРГАЛКА -->
+<!-- ============================================================ -->
+<div class="section" id="cheatsheet">
+  <div class="section-header">
+    <div class="section-number">+</div>
+    <h2>Шпаргалка</h2>
+  </div>
+
+  <details>
+    <summary>Полезные команды Claude</summary>
+    <div>
+      <table>
+        <tr><th>Команда</th><th>Что делает</th></tr>
+        <tr><td><code class="ci">/init</code></td><td>Создать CLAUDE.md автоматически</td></tr>
+        <tr><td><code class="ci">/help</code></td><td>Показать справку</td></tr>
+        <tr><td><code class="ci">/clear</code></td><td>Очистить историю разговора</td></tr>
+        <tr><td><code class="ci">/compact</code></td><td>Сжать историю (если Claude начал забывать)</td></tr>
+        <tr><td><code class="ci">/cost</code></td><td>Показать сколько токенов потрачено</td></tr>
+        <tr><td><code class="ci">Esc</code></td><td>Отменить текущую операцию</td></tr>
+      </table>
+    </div>
+  </details>
+
+  <details>
+    <summary>Что говорить Claude по-русски</summary>
+    <div>
+      <p style="margin-bottom: 10px;">Claude отлично понимает русский! Примеры:</p>
+      <pre><code>"Создай новый компонент для формы регистрации"
+"Исправь ошибку в файле src/App.tsx"
+"Объясни что делает эта функция"
+"Добавь валидацию email в форму"
+"Запомни что мы используем Tailwind CSS"
+"Покажи структуру проекта"</code></pre>
+    </div>
+  </details>
+
+  <details>
+    <summary>Если что-то пошло не так</summary>
+    <div>
+      <table>
+        <tr><th>Проблема</th><th>Решение</th></tr>
+        <tr><td>Claude не видит мой CLAUDE.md</td><td>Убедись что файл в корне проекта (не в подпапке)</td></tr>
+        <tr><td>Claude забыл о чём мы говорили</td><td>Напиши <code class="ci">/compact</code> или начни новый разговор</td></tr>
+        <tr><td>Claude делает не то что я хочу</td><td>Добавь правило в CLAUDE.md — он будет следовать</td></tr>
+        <tr><td>Расширение не работает</td><td>Перезапусти VS Code (Cmd+Q, открой заново)</td></tr>
+        <tr><td>Ошибка авторизации</td><td>Проверь подписку на claude.ai (нужен Pro или Max)</td></tr>
+      </table>
+    </div>
+  </details>
+</div>
+
+</div><!-- /container -->
+
+<div class="footer">
+  <p>Claude Code Setup Guide &mdash; <a href="https://code.claude.com/docs">Документация</a></p>
+  <p style="margin-top: 8px;">Обновлено: Апрель 2026</p>
+</div>
+
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.cw').querySelector('pre');
+  navigator.clipboard.writeText(pre.textContent).then(() => {
+    btn.textContent = 'Скопировано!';
+    btn.classList.add('ok');
+    setTimeout(() => { btn.textContent = 'Копировать'; btn.classList.remove('ok'); }, 2000);
+  });
+}
+function toggleCheck(li) { li.classList.toggle('done'); saveChecklist(); }
+function saveChecklist() {
+  const s = {};
+  document.querySelectorAll('.checklist').forEach(l => {
+    s[l.id] = Array.from(l.children).map(i => i.classList.contains('done'));
+  });
+  localStorage.setItem('claude-setup-ru', JSON.stringify(s));
+}
+function loadChecklist() {
+  const d = localStorage.getItem('claude-setup-ru');
+  if (!d) return;
+  const s = JSON.parse(d);
+  Object.keys(s).forEach(id => {
+    const l = document.getElementById(id);
+    if (!l) return;
+    s[id].forEach((v, i) => { if (v && l.children[i]) l.children[i].classList.add('done'); });
+  });
+}
+loadChecklist();
+</script>
+</body>
+</html>
